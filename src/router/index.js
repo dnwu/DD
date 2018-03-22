@@ -3,7 +3,8 @@ import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld'
 
 const Login = () => import('@/components/Login/Login')
-const Index = () => import('@/components/Index/Plan/List')
+const Index = () => import('@/components/Index/Index')
+const List = () => import('@/components/Index/Plan/List')
 
 Vue.use(Router)
 
@@ -14,7 +15,12 @@ let router = new Router({
       name: 'Index',
       component: Index,
       redirect: '/index/list',
-
+      children: [
+        {
+          path: '/index/list',
+          component: List
+        }
+      ]
     },
     {
       path: '/login',
