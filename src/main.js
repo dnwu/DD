@@ -7,7 +7,10 @@ import axios from '@/config/axios.js';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import Vuex from 'vuex'
+// import EasyScroll from 'easyscroll';
+import './config/css/scroll.scss'
 
+// Vue.use(EasyScroll);
 Vue.use(Vuex)
 
 Vue.config.productionTip = false
