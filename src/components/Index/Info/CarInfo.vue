@@ -25,111 +25,56 @@
       <div class="cost-per">每公里成本(元)</div>
       <div class="edit-box"></div>
     </div>
-    <div class="box" ref="box">
-      <div class="box-main common">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="start-position">2018-03-06</div>
-        <div class="return-position green">未调度</div>
-        <div class="car-num">szfdc</div>
-        <div class="car-type">1030</div>
-        <div class="size">666</div>
-        <div class="rate">666</div>
-        <div class="cost">666</div>
-        <div class="cost-per">±30</div>
-        <div class="edit-box">
+    <div class="box" ref="box" v-for="(item,index) in carInfoList" :key="index">
+      <div class="box-main common" :class="index%2 == 0?'':'couple'">
+        <div class="all"><el-checkbox v-model="item._checked"></el-checkbox></div>
+        <div class="id">{{item.car_id}}</div>
+        <div class="start-position">{{item.start_adress}}</div>
+        <div class="return-position">{{item.return_adress}}</div>
+        <div class="car-num">{{item.type}}</div>
+        <div class="car-type">{{item.stock_type_code}}</div>
+        <div class="size">{{`${item.length}*${item.width}*${item.height}`}}</div>
+        <div class="rate">{{item.lowest_load_rate}}</div>
+        <div class="cost">{{item.launch_cost}}</div>
+        <div class="cost-per">{{item.perkm_cost}}</div>
+        <div class="edit-box" :class="index%2 == 0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
+          <div class="delete el-icon-delete" @click="deleteCar(item.car_id)"></div>
+          <div class="arrow el-icon-arrow-down" @click="slide(index)"></div>
         </div>
       </div>
       <transition name="slide">
-        <div class="box-detial" v-show="box">
+        <div class="box-detial" v-show="item._open">
           <div class="goodInfo-common">
             <div class="row">
-              <div>固定载重(kg):/</div>
-              <div>装载速度(按件):5min/件</div>
-              <div>回程每公里成本:5.63</div>
+              <div>额定载重(kg):{{item.car_load}}</div>
+              <div>装载速度(按件):{{item.loading_speed_unit=='min/件'?`${item.loading_speed}min/件`:'/min/件'}}</div>
+              <div>回程每公里成本:{{item.return_perkm_cost}}</div>
             </div>
             <div class="row">
-              <div>额定体积(m³):/</div>
-              <div>装载速度(按吨):5min/t</div>
-              <div>每小时成本:520.63</div>
+              <div>额定体积(m³):{{item.volume}}</div>
+              <div>装载速度(按吨):{{item.loading_speed_unit=='min/t'?`${item.loading_speed}min/t`:'/min/t'}}</div>
+              <div>每小时成本:{{item.perhour_cost}}</div>
             </div>
             <div class="row">
-              <div>额定件数(件):250</div>
-              <div>装货速度(按立方米):5min/m³</div>
-              <div>多点操作费:/</div>
+              <div>额定件数(件):{{item.rated_quantity}}</div>
+              <div>装货速度(按立方米):{{item.loading_speed_unit=='min/立方米'?`${item.loading_speed}min/立方米`:'/min/立方米'}}</div>
+              <div>多点操作费:{{item.many_point_cost}}</div>
             </div>
             <div class="row">
-              <div>最大送货点数:10</div>
-              <div>卸货速度(按件):5</div>
-              <div>弹性件数:/</div>
+              <div>最大送货点数:{{item.delivery_point_restriction}}</div>
+              <div>卸货速度(按件):{{item.unloading_speed_unit=='min/件'?`${item.unloading_speed}min/件`:'/min/件'}}</div>
+              <div>弹性件数:{{item.elastic_piece}}</div>
             </div>
             <div class="row">
-              <div>工作时长:8h</div>
-              <div>卸货速度(按吨):/</div>
-              <div>弹性重量:/</div>
+              <div>工作时长:{{item.working_time}}h</div>
+              <div>卸货速度(按吨):{{item.unloading_speed_unit=='min/t'?`${item.unloading_speed}min/t`:'/min/t'}}</div>
+              <div>弹性重量:{{item.elastic_weight}}</div>
             </div>
             <div class="row">
-              <div>行驶速度:50km/h</div>
-              <div>卸货速度(按立方米):/</div>
-              <div>弹性体积:/</div>
-            </div>
-          </div>
-        </div>
-      </transition>
-    </div>
-    <div class="box" ref="box">
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="start-position">2018-03-06</div>
-        <div class="return-position green">未调度</div>
-        <div class="car-num">szfdc</div>
-        <div class="car-type">1030</div>
-        <div class="size">666</div>
-        <div class="rate">666</div>
-        <div class="cost">666</div>
-        <div class="cost-per">±30</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
-        </div>
-      </div>
-      <transition name="slide">
-        <div class="box-detial" v-show="box">
-          <div class="goodInfo-common">
-            <div class="row">
-              <div>固定载重(kg):/</div>
-              <div>装载速度(按件):5min/件</div>
-              <div>回程每公里成本:5.63</div>
-            </div>
-            <div class="row">
-              <div>额定体积(m³):/</div>
-              <div>装载速度(按吨):5min/t</div>
-              <div>每小时成本:520.63</div>
-            </div>
-            <div class="row">
-              <div>额定件数(件):250</div>
-              <div>装货速度(按立方米):5min/m³</div>
-              <div>多点操作费:/</div>
-            </div>
-            <div class="row">
-              <div>最大送货点数:10</div>
-              <div>卸货速度(按件):5</div>
-              <div>弹性件数:/</div>
-            </div>
-            <div class="row">
-              <div>工作时长:8h</div>
-              <div>卸货速度(按吨):/</div>
-              <div>弹性重量:/</div>
-            </div>
-            <div class="row">
-              <div>行驶速度:50km/h</div>
-              <div>卸货速度(按立方米):/</div>
-              <div>弹性体积:/</div>
+              <div>行驶速度:{{item.speed}}km/h</div>
+              <div>卸货速度(按立方米):{{item.unloading_speed_unit=='min/立方米'?`${item.unloading_speed}min/立方米`:'/min/立方米'}}</div>
+              <div>弹性体积:{{item.elastic_volume}}</div>
             </div>
           </div>
         </div>
@@ -141,7 +86,8 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change = "currentChange"
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -153,45 +99,80 @@ export default {
   data() {
     return {
       checked: false,
-      box: true
+      box: true,
+      carInfoList: [],
+      total: 10
     };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.elMainBox = document.querySelector(".el-main");
-      this.initStyle();
-      this.resetEditBox();
-      window.onresize = () => {
-        this.initStyle();
-        this.resetEditBox();
-      };
-      this.$refs.form.onscroll = e => {
-        this.resetEditBox();
-        // console.log(this.$refs.form.scrollLeft);
-      };
-    });
+  created() {
+    this.getCarInfoList("1");
   },
+  mounted() {},
   methods: {
-    slide() {
-      this.box = !this.box;
+    getCarInfoList(currentPage) {
+      this.axios
+        .get("/web-schedul/service/info/listCarByPage", {
+          params: {
+            currentPage: currentPage,
+            pageSize: "10"
+          }
+        })
+        .then(data => {
+          console.log(data.data.page);
+          this.carInfoList = data.data.page.recordList;
+          this.carInfoList.forEach(ele => {
+            this.$set(ele, "_checked", false);
+            this.$set(ele, "_open", false);
+          });
+
+          this.$nextTick(() => {
+            this.elMainBox = document.querySelector(".el-main");
+            this.editBox = document.querySelectorAll(".edit-box");
+            this.initStyle();
+            this.resetEditBox();
+            window.onresize = () => {
+              this.initStyle();
+              this.resetEditBox();
+            };
+            this.$refs.form.onscroll = e => {
+              this.resetEditBox();
+              // console.log(this.$refs.form.scrollLeft);
+            };
+          });
+        });
+    },
+    deleteCar(id) {
+      console.log(id);
+      this.axios.get("/web-schedul/service/info/deleteCar", {
+        params: {
+          carId: id
+        }
+      }).then(data => {
+        this.getCarInfoList(1);
+      })
+    },
+    currentChange(e) {
+      this.getCarInfoList(e);
+    },
+    slide(index) {
+      this.carInfoList[index]._open = !this.carInfoList[index]._open;
     },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
       this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";
     },
     resetEditBox() {
-      var editBox = document.querySelectorAll(".edit-box");
       var formBoxWidth = this.$refs.form.offsetWidth;
       var scrollLeft = this.$refs.form.scrollLeft + formBoxWidth - 200;
-      var boxWidth = this.$refs.box.scrollWidth;
-      // console.log(scrollLeft);
+      var boxWidth = this.$refs.box[0].offsetWidth;
+      // console.log('boxWidth',boxWidth);
       if (this.$refs.form.scrollLeft >= boxWidth - formBoxWidth) {
-        editBox.forEach(element => {
+        this.editBox.forEach(element => {
           element.style.left = boxWidth - 200 + "px";
         });
         return;
       }
-      editBox.forEach(element => {
+      this.editBox.forEach(element => {
         element.style.left = scrollLeft + "px";
       });
     }
@@ -285,7 +266,7 @@ $fontGreen: #22acf2;
       }
     }
     .box {
-      // width: 2000px;
+      // width: 1523px;
       min-width: 1523px;
       // padding-top: 50px;
       // height: 2000px;
@@ -345,11 +326,11 @@ $fontGreen: #22acf2;
       }
     }
   }
-  .bottom{
+  .bottom {
     margin-top: 30px;
     display: flex;
     justify-content: flex-end;
-    .page{
+    .page {
       width: 666px;
     }
   }

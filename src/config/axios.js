@@ -7,13 +7,16 @@ import axios from 'axios'
 
 // axios 配置
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'http://120.79.38.80';
+axios.defaults.baseURL = 'http://172.20.104.182:8080';
+axios.defaults.withCredentials = true;
+// axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded'
 
 // http request 拦截器
 axios
   .interceptors
   .request
   .use(config => {
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     // if (store.state.token) {
     //   // config.headers.Authorization = `token ${store.state.token}`;
     // }

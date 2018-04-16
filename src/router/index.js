@@ -5,6 +5,7 @@ import Router from 'vue-router'
 const Login = () => import ('@/components/Login/Login')
 const Index = () => import ('@/components/Index/Index')
 const Order = () => import ('@/components/Index/Order/Order')
+const Neworder = () => import ('@/components/Index/Order/Neworder')
 const Plan = () => import ('@/components/Index/Plan/Plan')
 const PlanStep1 = () => import ('@/components/Index/Plan/PlanStep1')
 const PlanStep2 = () => import ('@/components/Index/Plan/PlanStep2')
@@ -31,6 +32,10 @@ let router = new Router({
         {
           path: '/index/Order',
           component: Order
+        },
+        {
+          path: '/index/neworder',
+          component: Neworder
         },
         {
           path: '/index/plan',
