@@ -25,37 +25,21 @@
       <div class="edit-box"></div>
     </div>
     <div class="box" ref="box">
-      <div class="box-main common">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="code">284646654654654</div>
-        <div class="name">2018-03-06</div>
-        <div class="type">未调度</div>
-        <div class="start-end">szfdc</div>
-        <div class="time">666</div>
-        <div class="allow">666</div>
-        <div class="position">666</div>
-        <div class="lng-lat">666</div>
-        <div class="edit-box">
+      <div class="box-main common" v-for="(item,index) in positonInfoList" :key="index" :class="index%2==0?'':'couple'">
+        <div class="all"><el-checkbox v-model="item.checked"></el-checkbox></div>
+        <div class="code">{{item.place_id}}</div>
+        <div class="name">{{item.place_name}}</div>
+        <div class="type">{{item.place_type}}</div>
+        <div class="start-end">{{`${item.opentime}-${item.limitTime}`}}</div>
+        <div class="time">{{item.communication_time}}</div>
+        <div class="allow">{{item.allow_car}}</div>
+        <div class="position">{{item.place_adress}}</div>
+        <div class="lng-lat">{{`${item.lon}/${item.lat}`}}</div>
+        <div class="edit-box" :class="index%2==0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
+          <div class="delete el-icon-delete" @click="deletePosition(item.place_id)"></div>
         </div>
       </div>
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="code">284646654654654</div>
-        <div class="name">2018-03-06</div>
-        <div class="type">未调度</div>
-        <div class="start-end">szfdc</div>
-        <div class="time">666</div>
-        <div class="allow">666</div>
-        <div class="position">666</div>
-        <div class="lng-lat">666</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-        </div>
-      </div>
-
     </div>
   </div>
   <div class="bottom">
@@ -63,7 +47,8 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change = "currentChange"
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -74,25 +59,60 @@ export default {
   name: "positionInfo",
   data() {
     return {
-      checked: false
+      checked: false,
+      total: 10,
+      positonInfoList: []
     };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.elMainBox = document.querySelector(".el-main");
-      this.initStyle();
-      this.resetEditBox();
-      window.onresize = () => {
-        this.initStyle();
-        this.resetEditBox();
-      };
-      this.$refs.form.onscroll = e => {
-        this.resetEditBox();
-        // console.log(this.$refs.form.scrollLeft);
-      };
-    });
+  created() {
+    this.getPositionInfoList(1);
   },
+  mounted() {},
   methods: {
+    getPositionInfoList(page) {
+      this.axios
+        .get("/web-schedul/service/info/listPlaceByPage", {
+          params: {
+            currentPage: page,
+            pageSize: "10"
+          }
+        })
+        .then(data => {
+          console.log(data.data.page);
+          this.positonInfoList = data.data.page.recordList;
+          this.positonInfoList.forEach(ele => {
+            this.$set(ele, "checked", false);
+          });
+          this.$nextTick(() => {
+            this.elMainBox = document.querySelector(".el-main");
+            this.initStyle();
+            this.resetEditBox();
+            window.onresize = () => {
+              this.initStyle();
+              this.resetEditBox();
+            };
+            this.$refs.form.onscroll = e => {
+              this.resetEditBox();
+              // console.log(this.$refs.form.scrollLeft);
+            };
+          });
+        });
+    },
+    currentChange(page) {
+      this.getPositionInfoList(page);
+    },
+    deletePosition(id) {
+      // console.log(id);
+      this.axios
+        .get("/web-schedul/service/info/deletePlace", {
+          params: {
+            place_id: id
+          }
+        })
+        .then(data => {
+          this.getPositionInfoList(1);
+        });
+    },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
       this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";
@@ -157,34 +177,37 @@ $fontGreen: #22acf2;
         width: 100px;
       }
       .code {
-        width: 200px;
+        width: 150px;
       }
       .name {
-        width: 200px;
+        width: 150px;
       }
       .type {
-        width: 150px;
+        width: 130px;
       }
       .start-end {
         width: 150px;
       }
       .time {
-        width: 150px;
+        width: 100px;
       }
       .allow {
         width: 150px;
       }
       .position {
-        width: 150px;
+        width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      .lng-lat{
-        width: 150px;
+      .lng-lat {
+        width: 170px;
       }
     }
     .title {
       height: 50px;
       // width: 2000px;
-      min-width: 1523px;
+      min-width: 1600px;
       background-color: skyblue;
       position: relative;
       top: 0;
@@ -201,7 +224,7 @@ $fontGreen: #22acf2;
     }
     .box {
       // width: 2000px;
-      min-width: 1523px;
+      min-width: 1600px;
       // padding-top: 50px;
       // height: 2000px;
       .goodInfo-common {

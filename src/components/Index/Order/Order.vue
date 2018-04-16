@@ -13,7 +13,7 @@
   </div>
   <div class="form" ref="form">
     <div class="title common">
-      <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
+      <div class="all"><el-checkbox @change='allChange' v-model="checked">全选</el-checkbox></div>
       <div class="id">订单ID <span class="el-icon-search"></span></div>
       <div class="time">
         <label for="date-picker">
@@ -41,7 +41,7 @@
     </div>
     <div class="box" ref="box" v-for="(item,index) in orderList" :key="index">
       <div class="box-main common" :class="index%2 == 0?'':'couple'">
-        <div class="all"><el-checkbox v-model="item._checked"></el-checkbox></div>
+        <div class="all"><el-checkbox @change='change' v-model="item._checked"></el-checkbox></div>
         <div class="id">{{item.orderInfo.order_id}}</div>
         <div class="time">{{initOrderTime(item.orderInfo.order_time)}}</div>
         <div class="status green">{{item.orderInfo.is_processed?'已调度':'未调度'}}</div>
@@ -79,7 +79,7 @@
     </div>
   </div>
   <div class="bottom">
-    <div class="btn"><el-button type="info" round>生成调度方案</el-button></div>
+    <div class="btn"><el-button :type="btnType" :disabled='disabled' @click="goto('/index/planstep2')" round>生成调度方案</el-button></div>
     <div class="page">
       <el-pagination
         background
@@ -99,9 +99,12 @@ export default {
     return {
       box: true,
       checked: false,
+      disabled: true,
+      btnType: "info",
       value1: "",
       orderList: [],
-      total: 20
+      total: 20,
+      saveOrderIds: ""
     };
   },
   created() {
@@ -179,6 +182,52 @@ export default {
       let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
       return `${year}-${month}-${day}`;
     },
+    allChange(item) {
+      let num = this.orderList.length;
+      if (num === 0) {
+        this.disableBtnClass();
+        return;
+      }
+      if (item) {
+        this.ableBtnClass();
+        this.orderList.forEach(ele => {
+          ele._checked = true;
+        });
+      } else {
+        this.disableBtnClass();
+        this.orderList.forEach(ele => {
+          ele._checked = false;
+        });
+      }
+    },
+    change(item) {
+      let num = this.orderList.length;
+      let _num = 0;
+      this.orderList.forEach(ele => {
+        if (ele._checked) {
+          _num++;
+          if (_num === num) {
+            this.checked = true;
+          }
+        }
+        if (_num !== 0) {
+          this.ableBtnClass();
+        } else {
+          this.disableBtnClass();
+        }
+        if (!ele._checked) {
+          this.checked = false;
+        }
+      });
+    },
+    disableBtnClass() {
+      this.btnType = "info";
+      this.disabled = true;
+    },
+    ableBtnClass() {
+      this.btnType = "primary";
+      this.disabled = false;
+    },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
       this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";
@@ -203,6 +252,13 @@ export default {
       this.orderList[index]._open = !this.orderList[index]._open;
     },
     goto(path) {
+      this.orderList.forEach(ele => {
+        if (ele._checked) {
+          this.saveOrderIds += ele.orderInfo.order_id + ",";
+        }
+      });
+      this.saveOrderIds = this.saveOrderIds.slice(0, -1);
+      window.sessionStorage.setItem("orderIds", this.saveOrderIds);
       this.$router.push(path);
     }
   }

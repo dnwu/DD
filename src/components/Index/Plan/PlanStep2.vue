@@ -10,12 +10,12 @@
       <img src="../../../assets/plan_icon1.png" alt="">
       <p>成本最低</p>
     </div>
-    <div class="less-mile">
-      <img src="../../../assets/plan_icon2.png" alt="">
+    <div class="less-mile active">
+      <img :src="icons[1]['active']" alt="">
       <p>里程最短</p>
     </div>
-    <div class="more-take active">
-      <img :src="icons[2]['active']" alt="">
+    <div class="more-take">
+      <img :src="icons[2]['default']" alt="">
       <p>装载率最高</p>
     </div>
     <div class="less-use">
@@ -34,6 +34,7 @@ export default {
   name: "order",
   data() {
     return {
+      orderIds: "",
       icons: [
         {
           default: require("../../../assets/plan_icon1.png"),
@@ -54,9 +55,44 @@ export default {
       ]
     };
   },
+  created() {
+    this.orderIds = window.sessionStorage.getItem("orderIds");
+    // console.log(this.orderIds);
+    if (!this.orderIds) {
+      this.$router.push("/index/planstep1");
+    }
+  },
   mounted() {},
   methods: {
+    /**
+     * 1:成本最低
+     * 2:里程最短
+     * 3:转载率最高
+     * 4:用车辆最少
+     */
     goto(path) {
+      if (path === "/index/planstep3") {
+        this.axios({
+          method: "post",
+          url: "/web-schedul/service/scheme/insert",
+          params: {
+            optimalObject: "2",
+            orderIds: this.orderIds
+          }
+        }).then(data => {
+          console.log(data);
+        }).catch(error => {
+          console.log(error);
+        });
+        // this.axios
+        //   .post("web-schedul/service/scheme/insert", {
+        //     optimalObject: "2",
+        //     orderIds: this.orderIds
+        //   })
+        //   .then(data => {
+        //     console.log(data);
+        //   });
+      }
       this.$router.push(path);
     }
   }
@@ -160,7 +196,7 @@ $fontGreen: #22acf2;
       cursor: pointer;
       &.active {
         color: #0092ff;
-        box-shadow: 0 0 16px #80E0FF;
+        box-shadow: 0 0 16px #80e0ff;
       }
     }
   }

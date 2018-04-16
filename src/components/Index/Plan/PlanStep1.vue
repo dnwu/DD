@@ -13,21 +13,12 @@
       <el-button type="primary" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
     </div>
   </div>
-  <div class="form" ref="formBox">
+  <div class="form" ref="form">
     <div class="title common">
-      <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
+      <div class="all"><el-checkbox @change='allChange' v-model="checked">全选</el-checkbox></div>
       <div class="id">订单ID <span class="el-icon-search"></span></div>
       <div class="time">
-        <label for="date-picker">
           订单时间 <span class="el-icon-date"></span>
-        </label>
-        <el-date-picker
-          id="date-picker"
-          v-model="value1"
-          type="date"
-          style="display:none"
-          placeholder="选择日期">
-        </el-date-picker>
       </div>
       <div class="status">未调度 <span class="el-icon-arrow-down"></span></div>
       <div class="start-id">装货点编号 <span class="el-icon-search"></span></div>
@@ -41,47 +32,35 @@
       <div class="end-time">卸货时长</div>
       <div class="edit-box"></div>
     </div>
-    <div class="box" ref="box">
-      <div class="box-main common">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="status green">未调度</div>
-        <div class="start-id">szfdc</div>
-        <div class="end-id">1030</div>
-        <div class="num">666</div>
-        <div class="weight">666</div>
-        <div class="volume">666</div>
-        <div class="start-time-range">±30</div>
-        <div class="start-time">66</div>
-        <div class="end-time-range">±30</div>
-        <div class="end-time">66</div>
-        <div class="edit-box">
+    <div class="box" ref="box" v-for="(item,index) in orderList" :key="index">
+      <div class="box-main common" :class="index%2 == 0?'':'couple'">
+        <div class="all"><el-checkbox @change='change' v-model="item._checked"></el-checkbox></div>
+        <div class="id">{{item.orderInfo.order_id}}</div>
+        <div class="time">{{initOrderTime(item.orderInfo.order_time)}}</div>
+        <div class="status green">{{item.orderInfo.is_processed?'已调度':'未调度'}}</div>
+        <div class="start-id">{{item.orderInfo.load_city_code}}</div>
+        <div class="end-id">{{item.orderInfo.unload_city_code}}</div>
+        <div class="num">{{item.orderInfo.total_piece}}</div>
+        <div class="weight">{{item.orderInfo.total_weight}}</div>
+        <div class="volume">{{item.orderInfo.total_volume}}</div>
+        <div class="start-time-range">±{{item.orderInfo.load_float_area}}</div>
+        <div class="start-time">{{item.orderInfo.load_time}}</div>
+        <div class="end-time-range">±{{item.orderInfo.unload_float_area}}</div>
+        <div class="end-time">{{item.orderInfo.unload_time}}</div>
+        <div class="edit-box" :class="index%2 == 0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
+          <div class="delete el-icon-delete" @click="deleteOrder(item.orderInfo.order_id)"></div>
+          <div class="arrow el-icon-arrow-down" @click="slide(index)"></div>
         </div>
       </div>
       <transition name="slide">
-        <div class="box-detial" v-show="box">
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
+        <div class="box-detial" v-show="item._open">
+          <div class="goodInfo-common" v-for="(s,i) in item.stocks" :key="i">
+            <div class="number"><span>{{i+1}}</span></div>
+            <div class="goodsId">货物ID:{{s.stock_id}}</div>
+            <div class="goodsName">货物名称:{{s.stock_name}}</div>
+            <div class="goodsType">货物类型:{{s.stock_type_code}}</div>
+            <div class="goodsNum">货物数量:{{s.stock_number}}件</div>
             <!-- <div class="edit-box">
               <div class="edit el-icon-edit-outline"></div>
               <div class="delete el-icon-delete"></div>
@@ -91,164 +70,16 @@
         </div>
       </transition>
     </div>
-    <div class="box" ref="box">
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="status green">未调度</div>
-        <div class="start-id">szfdc</div>
-        <div class="end-id">1030</div>
-        <div class="num">666</div>
-        <div class="weight">666</div>
-        <div class="volume">666</div>
-        <div class="start-time-range">±30</div>
-        <div class="start-time">66</div>
-        <div class="end-time-range">±30</div>
-        <div class="end-time">66</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
-        </div>
-      </div>
-      <transition name="slide">
-        <div class="box-detial" v-show="box">
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-        </div>
-      </transition>
-    </div>
-    <div class="box" ref="box">
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="status green">未调度</div>
-        <div class="start-id">szfdc</div>
-        <div class="end-id">1030</div>
-        <div class="num">666</div>
-        <div class="weight">666</div>
-        <div class="volume">666</div>
-        <div class="start-time-range">±30</div>
-        <div class="start-time">66</div>
-        <div class="end-time-range">±30</div>
-        <div class="end-time">66</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
-        </div>
-      </div>
-      <transition name="slide">
-        <div class="box-detial" v-show="box">
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-        </div>
-      </transition>
-    </div>
-    <div class="box" ref="box">
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="status green">未调度</div>
-        <div class="start-id">szfdc</div>
-        <div class="end-id">1030</div>
-        <div class="num">666</div>
-        <div class="weight">666</div>
-        <div class="volume">666</div>
-        <div class="start-time-range">±30</div>
-        <div class="start-time">66</div>
-        <div class="end-time-range">±30</div>
-        <div class="end-time">66</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-          <div class="arrow el-icon-arrow-down" @click="slide()"></div>
-        </div>
-      </div>
-      <transition name="slide">
-        <div class="box-detial" v-show="box">
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-          <div class="goodInfo-common">
-            <div class="number"><span>1</span></div>
-            <div class="goodsId">货物ID:464846</div>
-            <div class="goodsName">货物名称:苹果</div>
-            <div class="goodsType">货物类型:Lg</div>
-            <div class="goodsNum">货物数量:200件</div>
-            <!-- <div class="edit-box">
-              <div class="edit el-icon-edit-outline"></div>
-              <div class="delete el-icon-delete"></div>
-              <div class="arrow"></div>
-            </div> -->
-          </div>
-        </div>
-      </transition>
-    </div>
+
   </div>
   <div class="bottom">
-    <div class="btn"><el-button type="primary" round @click="goto('/index/planstep2')">选择计算方式</el-button></div>
+    <div class="btn"><el-button :type="btnType" :disabled="disabled" round @click="goto('/index/planstep2')">选择计算方式</el-button></div>
     <div class="page">
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change = "currentChange"
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -261,36 +92,136 @@ export default {
     return {
       box: true,
       checked: false,
-      value1: ""
+      disabled: true,
+      btnType: "info",
+      total: 10,
+      orderList: [],
+      saveOrderIds: ""
     };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.elMainBox = document.querySelector(".el-main");
-      this.initStyle();
-      this.resetEditBox();
-      window.onresize = () => {
-        this.initStyle();
-        this.resetEditBox();
-      };
-      this.$refs.formBox.onscroll = e => {
-        this.resetEditBox();
-        // console.log(this.$refs.form.scrollLeft);
-      };
-    });
+  created() {
+    this.getOrderList("1");
   },
+  mounted() {},
   methods: {
+    getOrderList(currentPage) {
+      this.axios
+        .get("/web-schedul/service/order/listOrderByPage", {
+          params: {
+            currentPage: currentPage,
+            pageSize: "10"
+          }
+        })
+        .then(data => {
+          this.orderList = [...data.data.page.recordList];
+          this.total = data.data.page.totalCount;
+          this.orderList.forEach(ele => {
+            this.$set(ele, "_checked", false);
+            this.$set(ele, "_open", false);
+          });
+          this.$nextTick(() => {
+            this.elMainBox = document.querySelector(".el-main");
+            this.editBox = document.querySelectorAll(".el-main .edit-box");
+            this.initStyle();
+            this.resetEditBox();
+            window.onresize = () => {
+              this.initStyle();
+              this.resetEditBox();
+            };
+            this.$refs.form.onscroll = e => {
+              this.resetEditBox();
+              // console.log(this.$refs.form.scrollLeft);
+            };
+          });
+        });
+    },
+    currentChange(e) {
+      this.getOrderList(e);
+    },
+    deleteOrder(id) {
+      console.log(id);
+      this.axios
+        .get("/web-schedul/service/order/delete", {
+          params: {
+            order_id: id
+          }
+        })
+        .then(data => {
+          // console.log(data);
+          this.getOrderList(1);
+        });
+    },
+    initOrderTime(time) {
+      var date = new Date(time);
+      let year = date.getFullYear();
+      let month =
+        date.getMonth() + 1 < 10
+          ? `0${date.getMonth() + 1}`
+          : date.getMonth() + 1;
+      let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+      return `${year}-${month}-${day}`;
+    },
+    slide(index) {
+      // console.log(index);
+      this.orderList[index]._open = !this.orderList[index]._open;
+    },
+    allChange(item) {
+      let num = this.orderList.length;
+      if (num === 0) {
+        this.disableBtnClass();
+        return;
+      }
+      if (item) {
+        this.ableBtnClass();
+        this.orderList.forEach(ele => {
+          ele._checked = true;
+        });
+      } else {
+        this.disableBtnClass();
+        this.orderList.forEach(ele => {
+          ele._checked = false;
+        });
+      }
+    },
+    change(item) {
+      let num = this.orderList.length;
+      let _num = 0;
+      this.orderList.forEach(ele => {
+        if (ele._checked) {
+          _num++;
+          if (_num === num) {
+            this.checked = true;
+          }
+        }
+        if (_num !== 0) {
+          this.ableBtnClass();
+        } else {
+          this.disableBtnClass();
+        }
+        if (!ele._checked) {
+          this.checked = false;
+        }
+      });
+    },
+    disableBtnClass() {
+      this.btnType = "info";
+      this.disabled = true;
+    },
+    ableBtnClass() {
+      this.btnType = "primary";
+      this.disabled = false;
+    },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
-      this.$refs.formBox.style.height = elMainBoxHeight * 0.7 + "px";
+      this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";
     },
     resetEditBox() {
       var editBox = document.querySelectorAll(".edit-box");
-      var formBoxWidth = this.$refs.formBox.offsetWidth;
-      var scrollLeft = this.$refs.formBox.scrollLeft + formBoxWidth - 200;
-      var boxWidth = this.$refs.box.scrollWidth;
+      var formBoxWidth = this.$refs.form.offsetWidth;
+      var scrollLeft = this.$refs.form.scrollLeft + formBoxWidth - 200;
+      var boxWidth = this.$refs.box[0].scrollWidth;
       // console.log(scrollLeft);
-      if (this.$refs.formBox.scrollLeft >= boxWidth - formBoxWidth) {
+      if (this.$refs.form.scrollLeft >= boxWidth - formBoxWidth) {
         editBox.forEach(element => {
           element.style.left = boxWidth - 200 + "px";
         });
@@ -300,10 +231,14 @@ export default {
         element.style.left = scrollLeft + "px";
       });
     },
-    slide() {
-      this.box = !this.box;
-    },
     goto(path) {
+      this.orderList.forEach(ele => {
+        if (ele._checked) {
+          this.saveOrderIds += ele.orderInfo.order_id + ",";
+        }
+      });
+      this.saveOrderIds = this.saveOrderIds.slice(0, -1);
+      window.sessionStorage.setItem("orderIds", this.saveOrderIds);
       this.$router.push(path);
     }
   }

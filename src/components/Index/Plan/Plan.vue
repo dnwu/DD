@@ -14,41 +14,27 @@
       <div class="mileage">总里程(km)</div>
       <div class="carNum">车辆数</div>
       <div class="status">状态<span class="el-icon-arrow-down"></span></div>
-      <div class="change-num">迭代次数</div>
-      <div class="change-time">迭代时间(min)</div>
+      <!-- <div class="change-num">迭代次数</div> -->
+      <div class="change-time">计算时间(ms)</div>
       <div class="edit-box"></div>
     </div>
-    <div class="box" ref="box">
-      <div class="box-main common">
-        <div class="name">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="target">未调度</div>
-        <div class="all-pay">szfdc</div>
-        <div class="mileage">666</div>
-        <div class="carNum">666</div>
-        <div class="status">666</div>
-        <div class="change-num">666</div>
-        <div class="change-time">666</div>
-        <div class="edit-box">
+    <div class="box" ref="box" v-for="(item,index) in planList" :key="index">
+      <div class="box-main common" :class="index%2==0?'':'couple'">
+        <div class="name">{{item.name}}</div>
+        <div class="time">{{item.time}}</div>
+        <div class="target">{{item.optimal_object_name}}</div>
+        <div class="all-pay">{{item.total_cost}}</div>
+        <div class="mileage">{{item.total_distance}}</div>
+        <div class="carNum">{{item.car_number}}</div>
+        <div class="status bad" v-if="item.status==-1"><span class="circle"></span>故障</div>
+        <div class="status not" v-else-if="item.status==0"><span class="circle"></span>未计算</div>
+        <div class="status doing" v-else-if="item.status==1"><span class="circle"></span>计算中</div>
+        <div class="status did" v-else-if="item.status==2"><span class="circle"></span>已输出</div>
+        <!-- <div class="change-num"></div> -->
+        <div class="change-time">{{item.calculate_time}}</div>
+        <div class="edit-box" :class="index%2==0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-        </div>
-      </div>
-    </div>
-    <div class="box" ref="box">
-      <div class="box-main common couple">
-        <div class="name">284646654654654</div>
-        <div class="time">2018-03-06</div>
-        <div class="target">未调度</div>
-        <div class="all-pay">szfdc</div>
-        <div class="mileage">666</div>
-        <div class="carNum">666</div>
-        <div class="status">666</div>
-        <div class="change-num">666</div>
-        <div class="change-time">666</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
+          <div class="delete el-icon-delete" @click="deletePlan(item.id)"></div>
         </div>
       </div>
     </div>
@@ -58,7 +44,8 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change = "currentChange"
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -67,24 +54,58 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      planList: [],
+      total: 10
+    };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.elMainBox = document.querySelector(".el-main");
-      this.initStyle();
-      this.resetEditBox();
-      window.onresize = () => {
-        this.initStyle();
-        this.resetEditBox();
-      };
-      this.$refs.form.onscroll = e => {
-        this.resetEditBox();
-        // console.log(this.$refs.form.scrollLeft);
-      };
-    });
+  created() {
+    this.getPlanList(1);
   },
+  mounted() {},
   methods: {
+    getPlanList(currentPage) {
+      this.axios
+        .get("/web-schedul/service/scheme/listSchemeByPage", {
+          params: {
+            currentPage: currentPage,
+            pageSize: 10
+          }
+        })
+        .then(data => {
+          console.log(data.data.schemes);
+          this.total = data.data.schemes.totalCount;
+          this.planList = data.data.schemes.recordList;
+          this.$nextTick(() => {
+            this.elMainBox = document.querySelector(".el-main");
+            this.initStyle();
+            this.resetEditBox();
+            window.onresize = () => {
+              this.initStyle();
+              this.resetEditBox();
+            };
+            this.$refs.form.onscroll = e => {
+              this.resetEditBox();
+              // console.log(this.$refs.form.scrollLeft);
+            };
+          });
+        });
+    },
+    currentChange(page) {
+      this.getPlanList(page);
+    },
+    deletePlan(id) {
+      console.log(id);
+      this.axios
+        .get("/web-schedul/service/scheme/delete", {
+          params: {
+            schemeId: id
+          }
+        })
+        .then(data => {
+          this.getPlanList(1)
+        });
+    },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
       this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";
@@ -166,10 +187,46 @@ $fontGreen: #22acf2;
       }
       .status {
         width: 150px;
+        .circle {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+
+          margin-right: 5px;
+        }
+        &.bad {
+          color: red;
+          .circle {
+            background-color: red;
+            box-shadow: 0 0 4px red;
+          }
+        }
+        &.not {
+          color: gray;
+          .circle {
+            background-color: gray;
+            box-shadow: 0 0 4px gray;
+          }
+        }
+        &.doing {
+          color: #22acf2;
+          .circle {
+            background-color: #22acf2;
+            box-shadow: 0 0 4px #22acf2;
+          }
+        }
+        &.did {
+          color: #3ab54b;
+          .circle {
+            background-color: #3ab54b;
+            box-shadow: 0 0 4px #3ab54b;
+          }
+        }
       }
-      .change-num {
-        width: 150px;
-      }
+      // .change-num {
+      //   width: 150px;
+      // }
       .change-time {
         width: 150px;
       }
