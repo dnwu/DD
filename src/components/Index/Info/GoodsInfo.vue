@@ -15,7 +15,7 @@
     <div class="title common">
       <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
       <div class="id">货物ID <span class="el-icon-search"></span></div>
-      <div class="gooods-name">货物名称<span class="el-icon-search"></span></div>
+      <div class="goods-name">货物名称<span class="el-icon-search"></span></div>
       <div class="goods-type">货物类型<span class="el-icon-search"></span></div>
       <div class="pay-unit">计量单位<span class="el-icon-arrow-down"></span></div>
       <div class="weight-per">单位重量(kg)</div>
@@ -24,35 +24,20 @@
       <div class="edit-box"></div>
     </div>
     <div class="box" ref="box">
-      <div class="box-main common">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="gooods-name">2018-03-06</div>
-        <div class="goods-type">未调度</div>
-        <div class="pay-unit">szfdc</div>
-        <div class="weight-per">666</div>
-        <div class="size-per">666</div>
-        <div class="remark">666</div>
-        <div class="edit-box">
+      <div class="box-main common" v-for="(item,index) in goodsInfoList" :key="index" :class="index%2==0?'':'couple'">
+        <div class="all"><el-checkbox v-model="item.checked"></el-checkbox></div>
+        <div class="id">{{item.stockId}}</div>
+        <div class="goods-name">{{item.stockName}}</div>
+        <div class="goods-type">{{item.stockType}}</div>
+        <div class="pay-unit">{{item.measurementUnit}}</div>
+        <div class="weight-per">{{item.weight}}</div>
+        <div class="size-per">{{item.volume}}</div>
+        <div class="remark">{{item.remarks}}</div>
+        <div class="edit-box" :class="index%2==0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
+          <div class="delete el-icon-delete" @click="deleteGood(item.stockId)"></div>
         </div>
       </div>
-      <div class="box-main common couple">
-        <div class="all"><el-checkbox v-model="checked"></el-checkbox></div>
-        <div class="id">284646654654654</div>
-        <div class="goods-name">2018-03-06</div>
-        <div class="goods-type">未调度</div>
-        <div class="pay-unit">szfdc</div>
-        <div class="weight-per">666</div>
-        <div class="size-per">666</div>
-        <div class="remark">666</div>
-        <div class="edit-box couple">
-          <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete"></div>
-        </div>
-      </div>
-
     </div>
   </div>
   <div class="bottom">
@@ -60,7 +45,8 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000">
+        @current-change = "currentChange"
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -71,25 +57,61 @@ export default {
   name: "goodsInfo",
   data() {
     return {
-      checked: false
+      checked: false,
+      total: 10,
+      goodsInfoList: []
     };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.elMainBox = document.querySelector(".el-main");
-      this.initStyle();
-      this.resetEditBox();
-      window.onresize = () => {
-        this.initStyle();
-        this.resetEditBox();
-      };
-      this.$refs.form.onscroll = e => {
-        this.resetEditBox();
-        // console.log(this.$refs.form.scrollLeft);
-      };
-    });
+  created() {
+    this.getGoodsInfoList(1);
   },
+  mounted() {},
   methods: {
+    getGoodsInfoList(page) {
+      this.axios
+        .get("/web-schedul/service/info/listStockByPage", {
+          params: {
+            currentPage: page,
+            pageSize: "10"
+          }
+        })
+        .then(data => {
+          console.log(data);
+          this.goodsInfoList = data.data.page.recordList;
+          this.goodsInfoList.forEach(ele => {
+            this.$set(ele, "checked", false);
+          });
+          this.total = data.data.page.totalCount;
+          this.$nextTick(() => {
+            this.elMainBox = document.querySelector(".el-main");
+            this.initStyle();
+            this.resetEditBox();
+            window.onresize = () => {
+              this.initStyle();
+              this.resetEditBox();
+            };
+            this.$refs.form.onscroll = e => {
+              this.resetEditBox();
+              // console.log(this.$refs.form.scrollLeft);
+            };
+          });
+        });
+    },
+    deleteGood(id) {
+      // console.log(id);
+      this.axios
+        .get("/web-schedul/service/info/deleteStock", {
+          params: {
+            stock_id: id
+          }
+        })
+        .then(data => {
+          this.getGoodsInfoList(1);
+        });
+    },
+    currentChange(page) {
+      this.getGoodsInfoList(page);
+    },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;
       this.$refs.form.style.height = elMainBoxHeight * 0.7 + "px";

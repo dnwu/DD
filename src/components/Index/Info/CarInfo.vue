@@ -124,7 +124,7 @@ export default {
             this.$set(ele, "_checked", false);
             this.$set(ele, "_open", false);
           });
-
+          this.total = data.data.page.totalCount
           this.$nextTick(() => {
             this.elMainBox = document.querySelector(".el-main");
             this.editBox = document.querySelectorAll(".edit-box");
