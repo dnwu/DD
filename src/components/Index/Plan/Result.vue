@@ -29,302 +29,47 @@
     <div id="container"></div>
     <div class="slide">
       <div class="selet">
-        <el-select v-model="value" placeholder="请选择">
+        <el-select v-model="car" @change='carChange' placeholder="全部路线">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in planList"
+            :key="item.car_id"
+            :label="item.car_id"
+            :value="item.car_id">
           </el-option>
         </el-select>
       </div>
-      <div class="line form">
-        <div class="point">
-          <div class="title">SZDC 南山存储点
-            <span class="num">1</span>
+      <div class="line form" ref="form" v-if="true">
+        <div class="point" v-for="(item,index) in planListInfo" :key="index">
+          <div class="title">{{item.placeInfo.placeName}}
+            <span class="num">{{index+1}}</span>
           </div>
           <div class="info">
-            <span>装货量:4.5t</span>
-            <span class="el-icon-time">装货 2010-10-10 10:10</span>
+            <span>装货量:{{item.burden}}t</span>
+            <span class="el-icon-time" v-if="index === 0">装货 {{item.lettime}}</span>
+            <span class="el-icon-time blue" v-else>到达 {{item.lettime}}</span>
           </div>
           <div class="order">
             <el-collapse v-model="activeNames" @change="handleChange">
-              <el-collapse-item title="订单:154654654" name="1">
+              <el-collapse-item v-for="(e,i) in item.orderInfo" :key="i" :title="'订单:'+e.orderId" :name="e.orderId" >
                 <div class="order-title common">
                   <div class="id">货物ID</div>
                   <div class="name">名称</div>
                   <div class="type">类型</div>
                   <div class="num">数量</div>
                 </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
+                <div class="info common" v-for="(_e,_i) in e.stockInfo" :key="_i">
+                  <div class="id">{{_e.stock_id}}</div>
+                  <div class="name">{{_e.stock_name}}</div>
+                  <div class="type">{{_e.stock_type_code}}</div>
+                  <div class="num">{{_e.stock_number}}</div>
                 </div>
               </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="2">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="3">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="4">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
+
             </el-collapse>
           </div>
           <div class="bottom-info">
-            <span class="el-icon-time green">出发 2010-10-10 10:10</span>
-          </div>
-        </div>
-        <div class="point">
-          <div class="title">SZDC 南山存储点
-            <span class="num">2</span>
-          </div>
-          <div class="info">
-            <span>装货量:4.5t</span>
-            <span class="el-icon-time blue">到达 2010-10-10 10:10</span>
-          </div>
-          <div class="order">
-            <el-collapse v-model="activeNames" @change="handleChange">
-              <el-collapse-item title="订单:154654654" name="1">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="2">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="3">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="订单:154654654" name="4">
-                <div class="order-title common">
-                  <div class="id">货物ID</div>
-                  <div class="name">名称</div>
-                  <div class="type">类型</div>
-                  <div class="num">数量</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-                <div class="info common">
-                  <div class="id">416546465416</div>
-                  <div class="name">水果</div>
-                  <div class="type">LLC</div>
-                  <div class="num">6666</div>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
-          <div class="bottom-info">
-            <span class="el-icon-time green">出发 2010-10-10 10:10</span>
+            <span v-if="index == planListInfoLength-1"></span>
+            <span class="el-icon-time green" v-else>出发 {{item.arrtime}}</span>
           </div>
         </div>
       </div>
@@ -338,54 +83,152 @@ export default {
   name: "result",
   data() {
     return {
-      input: "",
-      options: [
+      map: null,
+      BMap: null,
+      planList: [
         {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
+          car_id: "全部线路"
         }
       ],
-      value: "",
+      planListAll: [],
+      planListInfo: [],
+      planListInfoLength: 0,
+      input: "",
+      car: "",
       activeNames: ""
     };
   },
   mounted() {
     this.$nextTick(() => {
       baiduMap.init().then(BMap => {
-        console.log(BMap);
+        // console.log(BMap);
+        this.BMap = BMap;
         setTimeout(() => {
-          this.initMap(BMap);
+          this.initMap(this.BMap);
         }, 1000);
       });
+      this.initFormHeight();
+      window.onresize = () => {
+        console.log("滚动了");
+        this.initFormHeight();
+      };
     });
   },
   methods: {
     initMap(BMap) {
-      var map = new BMap.Map("container");
+      this.map = new BMap.Map("container");
       // // 创建地图实例
       var point = new BMap.Point(114.00804, 22.543595);
       // // 创建点坐标
-      map.enableScrollWheelZoom(true);
-      map.centerAndZoom(point, 14);
+      this.map.enableScrollWheelZoom(true);
+      this.map.centerAndZoom(point, 14);
       // // 初始化地图，设置中心点坐标和地图级别
+      this.getPlan();
     },
-    handleChange() {}
+    initFormHeight() {
+      let mapHeight = document.querySelector(".map").offsetHeight;
+      this.$refs.form.style.height = mapHeight * 0.9 - 100 + "px";
+      console.log(this.$refs.form.style.height);
+    },
+    carChange(e) {
+      console.log(this.car);
+      this.map.clearOverlays();
+      if (e === "全部线路") {
+        this.drawAllLine(this.planListAll);
+        return;
+      }
+      this.planList.forEach((ele, index) => {
+        if (ele.car_id === e) {
+          console.log(ele);
+          this.planListInfo = ele.place;
+          this.planListInfoLength = ele.place.length;
+          this.drawLine(this.map, ele.place, true, this.BMap);
+        }
+      });
+    },
+    handleChange(e) {
+      // console.log(this.activeNames);
+      // console.log(e);
+    },
+    getPlan() {
+      this.axios
+        .get("/web-schedul/service/scheme/getRouteInfo", {
+          params: {
+            schemeId: "test123"
+          }
+        })
+        .then(data => {
+          this.planList.push(...data.data.routeInfo);
+          this.planListAll = data.data.routeInfo;
+          this.planListInfo = data.data.routeInfo[0].place;
+          // this.car = data.data.routeInfo[0].car_id;
+          this.planListInfoLength = data.data.routeInfo[0].place.length;
+          console.log(this.planList);
+          this.drawAllLine(this.planListAll);
+        });
+    },
+    drawAllLine(data) {
+      data.forEach((ele, index) => {
+        if (index === 0) {
+          this.drawLine(this.map, ele.place, true, this.BMap);
+        } else {
+          this.drawLine(this.map, ele.place, true, this.BMap);
+        }
+      });
+    },
+    drawLine(map, places, active, BMap) {
+      let length = places.length;
+      // eslint-disable-next-line
+      var start = new BMap.Point(
+        places[0].placeInfo.lon,
+        places[0].placeInfo.lat
+      );
+      // eslint-disable-next-line
+      var end = new BMap.Point(
+        places[length - 1].placeInfo.lon,
+        places[length - 1].placeInfo.lat
+      );
+      var waypoints = [];
+      places.forEach((ele, index) => {
+        if (index !== 0 && index !== length - 1) {
+          var point = new BMap.Point(ele.placeInfo.lon, ele.placeInfo.lat);
+          waypoints.push(point);
+        }
+      });
+
+      // eslint-disable-next-line
+      var driving = new BMap.DrivingRoute(map, {
+        renderOptions: { map: map, autoViewport: true }
+      });
+      driving.search(start, end, {
+        waypoints: waypoints
+      }); // waypoints表示途经点
+      driving.setPolylinesSetCallback(function(lines) {
+        lines[0]._marker = "self";
+        lines[0].getPolyline().setStrokeOpacity(1);
+        if (active) {
+          lines[0].getPolyline().setStrokeColor("#00BD00");
+          // console.log(lines[0].getPolyline());
+        } else {
+          lines[0].getPolyline().setStrokeColor("#B8B8B8");
+        }
+        lines[0].getPolyline().setStrokeWeight(8);
+      });
+      // console.log(driving);
+      // driving.addEventListener('click',() => {
+      //   console.log('点击了driving');
+      // })
+
+      map.addEventListener("click", e => {
+        // console.log('点击了map');
+        // alert("点击坐标: " + e.point.lng + ", " + e.point.lat);
+        // console.log(e.point);
+        // console.log(e.type);
+        // console.log(e.target);
+        // console.log(e.pixel);
+        // console.log(e.overlay);
+      });
+    }
   }
 };
 </script>
@@ -463,7 +306,7 @@ $fontblue: #22acf2;
       top: 10px;
       right: 10px;
       width: 360px;
-      height: 85%;
+      // height: 85%;
       background-color: #fff;
       display: flex;
       flex-direction: column;
@@ -485,7 +328,8 @@ $fontblue: #22acf2;
         }
       }
       .line {
-        flex: 1;
+        // flex: 1;
+        // height: 80%;
         overflow: auto;
         text-align: left;
         color: $fontColor;
