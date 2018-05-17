@@ -2,10 +2,15 @@
 <div class="carInfo">
   <div class="top">
     <div class="import">
-      <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      <el-upload
+        action = ''
+        :show-file-list = "false"
+        :http-request = "uploadFile">
+        <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      </el-upload>
     </div>
     <div class="export">
-      <el-button type="primary" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
+      <el-button type="primary" @click="exportExcel" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
     </div>
     <div class="add-order">
       <el-button type="primary" size = 'mini' icon="el-icon-plus">新增车辆</el-button>
@@ -13,7 +18,7 @@
   </div>
   <div class="form" ref="form">
     <div class="title common">
-      <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
+      <div class="all"><el-checkbox @change='allChange' v-model="checked">全选</el-checkbox></div>
       <div class="id">车辆ID <span class="el-icon-search"></span></div>
       <div class="start-position">初始位置<span class="el-icon-search"></span></div>
       <div class="return-position">返回位置 <span class="el-icon-search"></span></div>
@@ -27,7 +32,7 @@
     </div>
     <div class="box" ref="box" v-for="(item,index) in carInfoList" :key="index">
       <div class="box-main common" :class="index%2 == 0?'':'couple'">
-        <div class="all"><el-checkbox v-model="item._checked"></el-checkbox></div>
+        <div class="all"><el-checkbox @change='change' v-model="item._checked"></el-checkbox></div>
         <div class="id">{{item.car_id}}</div>
         <div class="start-position">{{item.start_adress}}</div>
         <div class="return-position">{{item.return_adress}}</div>
@@ -94,6 +99,7 @@
 </div>
 </template>
 <script>
+import { download, upload } from "@/config/js/load";
 export default {
   name: "Carinfo",
   data() {
@@ -118,13 +124,13 @@ export default {
           }
         })
         .then(data => {
-          console.log(data.data.page);
+          console.log(data.data);
           this.carInfoList = data.data.page.recordList;
           this.carInfoList.forEach(ele => {
             this.$set(ele, "_checked", false);
             this.$set(ele, "_open", false);
           });
-          this.total = data.data.page.totalCount
+          this.total = data.data.page.totalCount;
           this.$nextTick(() => {
             this.elMainBox = document.querySelector(".el-main");
             this.editBox = document.querySelectorAll(".edit-box");
@@ -143,16 +149,70 @@ export default {
     },
     deleteCar(id) {
       console.log(id);
-      this.axios.get("/web-schedul/service/info/deleteCar", {
-        params: {
-          carId: id
-        }
-      }).then(data => {
-        this.getCarInfoList(1);
-      })
+      this.axios
+        .get("/web-schedul/service/info/deleteCar", {
+          params: {
+            carId: id
+          }
+        })
+        .then(data => {
+          this.getCarInfoList(1);
+        });
     },
     currentChange(e) {
       this.getCarInfoList(e);
+    },
+    exportExcel() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/excel/download/car",
+        params: {
+          ids: this.itemChecked()
+        },
+        responseType: "blob"
+      }).then(data => {
+        download(data.data, "car");
+      });
+    },
+    uploadFile(file) {
+      upload(file, "car", this.axios).then(data => {
+        this.getCarInfoList("1");
+      });
+    },
+    itemChecked() {
+      let checked = ''
+      this.carInfoList.forEach(ele => {
+        if(ele._checked) {
+          checked = checked + ele.car_id + ','
+        }
+      })
+      return checked.slice(0, -1)
+    },
+    allChange(item) {
+      if (item) {
+        this.carInfoList.forEach(ele => {
+          ele._checked = true;
+        });
+      } else {
+        this.carInfoList.forEach(ele => {
+          ele._checked = false;
+        });
+      }
+    },
+    change(item) {
+      let num = this.carInfoList.length;
+      let _num = 0;
+      this.carInfoList.forEach(ele => {
+        if (ele._checked) {
+          _num++;
+          if (_num === num) {
+            this.checked = true;
+          }
+        }
+        if (!ele._checked) {
+          this.checked = false;
+        }
+      });
     },
     slide(index) {
       this.carInfoList[index]._open = !this.carInfoList[index]._open;
@@ -165,7 +225,6 @@ export default {
       var formBoxWidth = this.$refs.form.offsetWidth;
       var scrollLeft = this.$refs.form.scrollLeft + formBoxWidth - 200;
       var boxWidth = this.$refs.box[0].offsetWidth;
-      // console.log('boxWidth',boxWidth);
       if (this.$refs.form.scrollLeft >= boxWidth - formBoxWidth) {
         this.editBox.forEach(element => {
           element.style.left = boxWidth - 200 + "px";

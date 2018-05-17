@@ -109,7 +109,7 @@ export default {
       });
       this.initFormHeight();
       window.onresize = () => {
-        console.log("滚动了");
+        // console.log("滚动了");
         this.initFormHeight();
       };
     });
@@ -128,10 +128,10 @@ export default {
     initFormHeight() {
       let mapHeight = document.querySelector(".map").offsetHeight;
       this.$refs.form.style.height = mapHeight * 0.9 - 100 + "px";
-      console.log(this.$refs.form.style.height);
+      // console.log(this.$refs.form.style.height);
     },
     carChange(e) {
-      console.log(this.car);
+      // console.log(this.car);
       this.map.clearOverlays();
       if (e === "全部线路") {
         this.drawAllLine(this.planListAll);
@@ -139,7 +139,7 @@ export default {
       }
       this.planList.forEach((ele, index) => {
         if (ele.car_id === e) {
-          console.log(ele);
+          // console.log(ele);
           this.planListInfo = ele.place;
           this.planListInfoLength = ele.place.length;
           this.drawLine(this.map, ele.place, true, this.BMap);

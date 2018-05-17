@@ -2,10 +2,15 @@
 <div class="goods-info">
   <div class="top">
     <div class="import">
-      <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      <el-upload
+        action = ''
+        :show-file-list = "false"
+        :http-request = "uploadFile">
+        <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      </el-upload>
     </div>
     <div class="export">
-      <el-button type="primary" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
+      <el-button type="primary" @click="exportExcel" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
     </div>
     <div class="add-order">
       <el-button type="primary" size = 'mini' icon="el-icon-plus">新增货物</el-button>
@@ -13,7 +18,7 @@
   </div>
   <div class="form" ref="form">
     <div class="title common">
-      <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
+      <div class="all"><el-checkbox @change='allChange' v-model="checked">全选</el-checkbox></div>
       <div class="id">货物ID <span class="el-icon-search"></span></div>
       <div class="goods-name">货物名称<span class="el-icon-search"></span></div>
       <div class="goods-type">货物类型<span class="el-icon-search"></span></div>
@@ -25,7 +30,7 @@
     </div>
     <div class="box" ref="box">
       <div class="box-main common" v-for="(item,index) in goodsInfoList" :key="index" :class="index%2==0?'':'couple'">
-        <div class="all"><el-checkbox v-model="item.checked"></el-checkbox></div>
+        <div class="all"><el-checkbox @change='change' v-model="item._checked"></el-checkbox></div>
         <div class="id">{{item.stockId}}</div>
         <div class="goods-name">{{item.stockName}}</div>
         <div class="goods-type">{{item.stockType}}</div>
@@ -53,6 +58,7 @@
 </div>
 </template>
 <script>
+import { download, upload } from "@/config/js/load";
 export default {
   name: "goodsInfo",
   data() {
@@ -76,10 +82,10 @@ export default {
           }
         })
         .then(data => {
-          console.log(data);
           this.goodsInfoList = data.data.page.recordList;
+          console.log(this.goodsInfoList);
           this.goodsInfoList.forEach(ele => {
-            this.$set(ele, "checked", false);
+            this.$set(ele, "_checked", false);
           });
           this.total = data.data.page.totalCount;
           this.$nextTick(() => {
@@ -108,6 +114,59 @@ export default {
         .then(data => {
           this.getGoodsInfoList(1);
         });
+    },
+    exportExcel() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/excel/download/stock",
+        params: {
+          ids: this.itemChecked()
+        },
+        responseType: "blob"
+      }).then(data => {
+        download(data.data, "stock ");
+      });
+    },
+    uploadFile(file) {
+      upload(file, "stock", this.axios).then(data => {
+        console.log(data);
+        this.getGoodsInfoList("1");
+      });
+    },
+    itemChecked() {
+      let checked = ''
+      this.goodsInfoList.forEach(ele => {
+        if(ele._checked) {
+          checked = checked + ele.stockId + ','
+        }
+      })
+      return checked.slice(0, -1)
+    },
+    allChange(item) {
+      if (item) {
+        this.goodsInfoList.forEach(ele => {
+          ele._checked = true;
+        });
+      } else {
+        this.goodsInfoList.forEach(ele => {
+          ele._checked = false;
+        });
+      }
+    },
+    change(item) {
+      let num = this.goodsInfoList.length;
+      let _num = 0;
+      this.goodsInfoList.forEach(ele => {
+        if (ele._checked) {
+          _num++;
+          if (_num === num) {
+            this.checked = true;
+          }
+        }
+        if (!ele._checked) {
+          this.checked = false;
+        }
+      });
     },
     currentChange(page) {
       this.getGoodsInfoList(page);

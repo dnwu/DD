@@ -2,10 +2,15 @@
 <div class="order">
   <div class="top">
     <div class="import">
-      <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      <el-upload
+        action = ''
+        :show-file-list = "false"
+        :http-request = "uploadFile">
+        <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      </el-upload>
     </div>
     <div class="export">
-      <el-button type="primary" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
+      <el-button type="primary" @click="exportExcel" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
     </div>
     <div class="add-order">
       <el-button type="primary" size = 'mini' icon="el-icon-plus" @click="goto('/index/neworder')">新增订单</el-button>
@@ -93,6 +98,7 @@
 </div>
 </template>
 <script>
+import { download, upload } from "@/config/js/load";
 export default {
   name: "order",
   data() {
@@ -155,6 +161,32 @@ export default {
             };
           });
         });
+    },
+    exportExcel() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/excel/download/order",
+        params: {
+          ids: this.itemChecked()
+        },
+        responseType: "blob"
+      }).then(data => {
+        download(data.data, "order");
+      });
+    },
+    uploadFile(file) {
+      upload(file, "order", this.axios).then(data => {
+        this.getOrderList("1");
+      });
+    },
+    itemChecked() {
+      let checked = ''
+      this.orderList.forEach(ele => {
+        if(ele._checked) {
+          checked = checked + ele.orderInfo.order_id + ','
+        }
+      })
+      return checked.slice(0, -1)
     },
     currentChange(e) {
       this.getOrderList(e);

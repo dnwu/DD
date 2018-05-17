@@ -114,7 +114,7 @@ export default {
       var editBox = document.querySelectorAll(".edit-box");
       var formBoxWidth = this.$refs.form.offsetWidth;
       var scrollLeft = this.$refs.form.scrollLeft + formBoxWidth - 200;
-      var boxWidth = this.$refs.box.scrollWidth;
+      var boxWidth = this.$refs.box[0].scrollWidth;
       // console.log(scrollLeft);
       if (this.$refs.form.scrollLeft >= boxWidth - formBoxWidth) {
         editBox.forEach(element => {

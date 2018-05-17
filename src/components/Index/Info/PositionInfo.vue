@@ -2,10 +2,15 @@
 <div class="position-info">
   <div class="top">
     <div class="import">
-      <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      <el-upload
+        action = ''
+        :show-file-list = "false"
+        :http-request = "uploadFile">
+        <el-button type="success" plain size = 'mini' icon="el-icon-download">导入</el-button>
+      </el-upload>
     </div>
     <div class="export">
-      <el-button type="primary" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
+      <el-button type="primary" @click="exportExcel" plain size = 'mini' icon="el-icon-upload2">导出</el-button>
     </div>
     <div class="add-order">
       <el-button type="primary" size = 'mini' icon="el-icon-plus">新增位置</el-button>
@@ -13,7 +18,7 @@
   </div>
   <div class="form" ref="form">
     <div class="title common">
-      <div class="all"><el-checkbox v-model="checked">全选</el-checkbox></div>
+      <div class="all"><el-checkbox @change="allChange" v-model="checked">全选</el-checkbox></div>
       <div class="code">位置编码<span class="el-icon-search"></span></div>
       <div class="name">名称<span class="el-icon-search"></span></div>
       <div class="type">类型<span class="el-icon-arrow-down"></span></div>
@@ -26,7 +31,7 @@
     </div>
     <div class="box" ref="box">
       <div class="box-main common" v-for="(item,index) in positonInfoList" :key="index" :class="index%2==0?'':'couple'">
-        <div class="all"><el-checkbox v-model="item.checked"></el-checkbox></div>
+        <div class="all"><el-checkbox @change="change" v-model="item._checked"></el-checkbox></div>
         <div class="code">{{item.place_id}}</div>
         <div class="name">{{item.place_name}}</div>
         <div class="type">{{item.place_type}}</div>
@@ -55,6 +60,7 @@
 </div>
 </template>
 <script>
+import { download, upload } from "@/config/js/load";
 export default {
   name: "positionInfo",
   data() {
@@ -78,10 +84,10 @@ export default {
           }
         })
         .then(data => {
-          console.log(data.data.page);
           this.positonInfoList = data.data.page.recordList;
+          console.log(this.positonInfoList);
           this.positonInfoList.forEach(ele => {
-            this.$set(ele, "checked", false);
+            this.$set(ele, "_checked", false);
           });
           this.$nextTick(() => {
             this.elMainBox = document.querySelector(".el-main");
@@ -112,6 +118,59 @@ export default {
         .then(data => {
           this.getPositionInfoList(1);
         });
+    },
+    exportExcel() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/excel/download/place",
+        params: {
+          ids: this.itemChecked()
+        },
+        responseType: "blob"
+      }).then(data => {
+        download(data.data, "place ");
+      });
+    },
+    uploadFile(file) {
+      upload(file, "place", this.axios).then(data => {
+        console.log(data);
+        this.getPositionInfoList(1);
+      });
+    },
+    itemChecked() {
+      let checked = ''
+      this.positonInfoList.forEach(ele => {
+        if(ele._checked) {
+          checked = checked + ele.place_id + ','
+        }
+      })
+      return checked.slice(0, -1)
+    },
+    allChange(item) {
+      if (item) {
+        this.positonInfoList.forEach(ele => {
+          ele._checked = true;
+        });
+      } else {
+        this.positonInfoList.forEach(ele => {
+          ele._checked = false;
+        });
+      }
+    },
+    change(item) {
+      let num = this.positonInfoList.length;
+      let _num = 0;
+      this.positonInfoList.forEach(ele => {
+        if (ele._checked) {
+          _num++;
+          if (_num === num) {
+            this.checked = true;
+          }
+        }
+        if (!ele._checked) {
+          this.checked = false;
+        }
+      });
     },
     initStyle() {
       var elMainBoxHeight = this.elMainBox.offsetHeight;

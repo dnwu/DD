@@ -38,7 +38,9 @@
         </div>
       </el-header>
       <el-main>
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </el-main>
     </el-container>
   </el-container>
@@ -202,8 +204,6 @@ export default {
         .navbox {
           padding: 0;
           .level1 {
-            line-height: 27px;
-            padding: 10px 0;
             cursor: pointer;
             &.active {
               background-color: #29b1e5;
@@ -213,6 +213,8 @@ export default {
               text-decoration: none;
               color: #94c9e7;
               width: 100%;
+              height: 47px;
+              line-height: 47px;
               @extend .imgIcon;
             }
             .title {
@@ -227,7 +229,10 @@ export default {
             }
             .level2Box {
               overflow: hidden;
-              height: 172px;
+              height: 188px;
+              .level2{
+                padding: 0;
+              }
             }
             .slide-enter-active,
             .slide-leave-active {
