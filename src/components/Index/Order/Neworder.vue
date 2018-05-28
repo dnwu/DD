@@ -7,7 +7,7 @@
     <span>订单信息</span>
   </div>
   <div class="order-info">
-    <el-form :model="orderInfo" ref="orderInfo" class="orderInfo">
+    <el-form :model="orderInfo" ref="orderInfo" class="order-info-form">
       <div class="line">
         <div class="item">
           <div class="tit must" title="订单编号">订单ID</div>
@@ -242,7 +242,7 @@
       <div class="btn">
         <el-form-item>
           <el-button round>全部清除</el-button>
-          <el-button type="primary" @click="onSubmit" round>保存信息</el-button>
+          <el-button type="primary" round>保存信息</el-button>
           <el-button round>复制订单信息</el-button>
         </el-form-item>
       </div>
@@ -393,6 +393,7 @@ $fontGreen: #22acf2;
   .back {
     text-align: right;
     margin-right: 50px;
+    height: 28px;
   }
   .title {
     height: 50px;
@@ -401,11 +402,12 @@ $fontGreen: #22acf2;
     text-align: left;
     color: $fontGreen;
     text-indent: 2em;
-    margin-top: 20px;
+    padding-top: 20px;
+    background-clip: content-box;
   }
   .order-info {
     flex: 1;
-    .orderInfo{
+    .order-info-form{
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -508,6 +510,7 @@ $fontGreen: #22acf2;
         margin-bottom: 10px;
         color: #818181;
         font-size: 14px;
+        height: 19px;
         > div {
           flex: 1;
           margin: 0 60px;
