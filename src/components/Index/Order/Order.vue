@@ -169,9 +169,15 @@ export default {
         params: {
           ids: this.itemChecked()
         },
-        responseType: "blob"
+        responseType: "blob",
+        // headers: {
+        //   'Content-Type': 'application/x-www-form-urlencoded'
+        // }
       }).then(data => {
+        console.log('order', data);
         download(data.data, "order");
+      }).catch(e => {
+        console.log('error' ,e);
       });
     },
     uploadFile(file) {

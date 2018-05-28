@@ -169,7 +169,8 @@ export default {
         params: {
           ids: this.itemChecked()
         },
-        responseType: "blob"
+        responseType: "blob",
+
       }).then(data => {
         download(data.data, "car");
       });
@@ -180,13 +181,13 @@ export default {
       });
     },
     itemChecked() {
-      let checked = ''
+      let checked = "";
       this.carInfoList.forEach(ele => {
-        if(ele._checked) {
-          checked = checked + ele.car_id + ','
+        if (ele._checked) {
+          checked = checked + ele.car_id + ",";
         }
-      })
-      return checked.slice(0, -1)
+      });
+      return checked.slice(0, -1);
     },
     allChange(item) {
       if (item) {

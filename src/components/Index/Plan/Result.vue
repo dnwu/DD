@@ -158,6 +158,7 @@ export default {
           }
         })
         .then(data => {
+          console.log('mapppp', data);
           this.planList.push(...data.data.routeInfo);
           this.planListAll = data.data.routeInfo;
           this.planListInfo = data.data.routeInfo[0].place;
