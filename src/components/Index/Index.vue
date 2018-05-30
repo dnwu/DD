@@ -169,18 +169,18 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.imgIcon {
-  img {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    transform: translateY(4px);
-  }
-}
+<style lang="scss">
 .index {
   width: 100%;
   height: 100%;
+  .imgIcon {
+    img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      transform: translateY(4px);
+    }
+  }
   .el-container {
     width: 100%;
     height: 100%;
@@ -282,7 +282,9 @@ export default {
       }
     }
     .el-main {
-      height: 100%;
+      position: relative;
+      padding: 0;
+      margin: 20px;
     }
   }
 }

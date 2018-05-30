@@ -10,7 +10,7 @@ export default {
 }
 </script>
 
-<style scpoed lang='scss'>
+<style lang='scss'>
 #app {
   font-family:'Microsoft YaHei' , 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

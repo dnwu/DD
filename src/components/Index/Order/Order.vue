@@ -182,6 +182,14 @@ export default {
     },
     uploadFile(file) {
       upload(file, "order", this.axios).then(data => {
+        if(data.data.code != 200) {
+          this.$message({
+            duration: 0,
+            showClose: true,
+            message: data.data.msg,
+            type: "error"
+          });
+        }
         this.getOrderList("1");
       });
     },

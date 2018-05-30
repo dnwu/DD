@@ -133,7 +133,14 @@ export default {
     },
     uploadFile(file) {
       upload(file, "place", this.axios).then(data => {
-        console.log(data);
+        if(data.data.code != 200) {
+          this.$message({
+            duration: 0,
+            showClose: true,
+            message: data.data.msg,
+            type: "error"
+          });
+        }
         this.getPositionInfoList(1);
       });
     },

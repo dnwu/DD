@@ -102,12 +102,11 @@ export default {
     }
   }
   .btn {
-    margin-top:20px;
-    button{
-      padding:10px 180px;
-      background-color:#00C2FF;
+    margin-top: 20px;
+    button {
+      padding: 10px 180px;
+      background-color: #00c2ff;
     }
   }
 }
 </style>
-

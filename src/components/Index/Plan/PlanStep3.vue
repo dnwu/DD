@@ -43,7 +43,9 @@ export default {
 $fontColor: #828282;
 $fontGreen: #22acf2;
 .plan-step3 {
+  position: absolute;
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   min-width: 1000px;

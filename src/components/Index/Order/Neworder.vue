@@ -386,6 +386,7 @@ export default {
 $fontColor: #828282;
 $fontGreen: #22acf2;
 .new-order {
+  position: absolute;
   height: 100%;
   min-width: 1300px;
   display: flex;

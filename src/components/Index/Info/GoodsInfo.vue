@@ -129,7 +129,14 @@ export default {
     },
     uploadFile(file) {
       upload(file, "stock", this.axios).then(data => {
-        console.log(data);
+        if(data.data.code != 200) {
+          this.$message({
+            duration: 0,
+            showClose: true,
+            message: data.data.msg,
+            type: "error"
+          });
+        }
         this.getGoodsInfoList("1");
       });
     },

@@ -169,14 +169,21 @@ export default {
         params: {
           ids: this.itemChecked()
         },
-        responseType: "blob",
-
+        responseType: "blob"
       }).then(data => {
         download(data.data, "car");
       });
     },
     uploadFile(file) {
       upload(file, "car", this.axios).then(data => {
+        if(data.data.code != 200) {
+          this.$message({
+            duration: 0,
+            showClose: true,
+            message: data.data.msg,
+            type: "error"
+          });
+        }
         this.getCarInfoList("1");
       });
     },
