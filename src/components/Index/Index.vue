@@ -285,6 +285,7 @@ export default {
       position: relative;
       padding: 0;
       margin: 20px;
+      overflow: hidden;
     }
   }
 }

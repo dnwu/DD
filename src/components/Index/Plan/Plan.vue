@@ -18,7 +18,7 @@
       <div class="change-time">计算时间(ms)</div>
       <div class="edit-box"></div>
     </div>
-    <div class="box" ref="box" v-for="(item,index) in planList" :key="index">
+    <div class="box" @click="getResult(item)" ref="box" v-for="(item,index) in planList" :key="index">
       <div class="box-main common" :class="index%2==0?'':'couple'">
         <div class="name">{{item.name}}</div>
         <div class="time">{{item.time}}</div>
@@ -64,6 +64,11 @@ export default {
   },
   mounted() {},
   methods: {
+    getResult(item) {
+      console.log(item.id);
+      window.sessionStorage.setItem('schemeId',item.id)
+      this.$router.push('/index/result')
+    },
     getPlanList(currentPage) {
       this.axios
         .get("/web-schedul/service/scheme/listSchemeByPage", {
@@ -254,6 +259,7 @@ $fontGreen: #22acf2;
       min-width: 1523px;
       // padding-top: 50px;
       // height: 2000px;
+      cursor: pointer;
       .goodInfo-common {
         line-height: 50px;
         font-size: 13px;

@@ -95,10 +95,12 @@ export default {
       planListInfoLength: 0,
       input: "",
       car: "",
-      activeNames: ""
+      activeNames: "",
+      schemeId: ''
     };
   },
   mounted() {
+    this.schemeId = window.sessionStorage.getItem('schemeId')
     this.$nextTick(() => {
       baiduMap.init().then(BMap => {
         // console.log(BMap);
@@ -154,7 +156,7 @@ export default {
       this.axios
         .get("/web-schedul/service/scheme/getRouteInfo", {
           params: {
-            schemeId: "test123"
+            schemeId: this.schemeId
           }
         })
         .then(data => {

@@ -81,19 +81,16 @@ export default {
           }
         }).then(data => {
           console.log(data);
+          if(data.data.code == 200) {
+            window.sessionStorage.setItem('schemeId',data.data.schemeId)
+            this.$router.push(path);
+          }
         }).catch(error => {
           console.log(error);
         });
-        // this.axios
-        //   .post("web-schedul/service/scheme/insert", {
-        //     optimalObject: "2",
-        //     orderIds: this.orderIds
-        //   })
-        //   .then(data => {
-        //     console.log(data);
-        //   });
+      }else {
+        this.$router.push(path);
       }
-      this.$router.push(path);
     }
   }
 };

@@ -155,7 +155,7 @@ $fontGreen: #22acf2;
         width: 34px;
         height: 34px;
         // transform-origin: 17px 80px;
-        transform: rotate(45deg)translate(-50%, -50%);
+        transform: rotate(45deg) translate(-50%, -50%);
         animation: scale 1s linear 125ms infinite;
       }
       span:nth-of-type(3) {
