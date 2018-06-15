@@ -42,7 +42,7 @@ let router = new Router({
     path: '/',
     name: 'Index',
     component: Index,
-    redirect: '/index/Order',
+    redirect: '/login',
     children: [{
         path: '/index/Order',
         component: Order

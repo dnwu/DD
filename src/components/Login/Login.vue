@@ -8,7 +8,7 @@
     </div>
     <div class="pass">
       <span class="icon icon-lock"></span>
-      <el-input v-model="pass" placeholder="请输入密码"></el-input>
+      <el-input v-model="pass" type="password" placeholder="请输入密码"></el-input>
       <span class="forget">忘记密码?</span>
     </div>
     <div class="check">
@@ -16,7 +16,7 @@
       <el-checkbox v-model="keepPass">记住密码</el-checkbox>
     </div>
     <div class="btn">
-      <el-button type="primary">登录</el-button>
+      <el-button type="primary" @click="login">登录</el-button>
     </div>
   </div>
 </div>
@@ -28,8 +28,28 @@ export default {
       name: "",
       pass: "",
       keepName: false,
-      keepPass: false
+      keepPass: false,
     };
+  },
+  created(){
+  },
+  methods: {
+    login() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/user/login",
+        params: {
+          username: this.name,
+          password: this.pass
+        }
+      }).then(data => {
+        if(data.data.code == 200) {
+          this.$router.push('/index/Order')
+        }else if(data.data.code == 500) {
+          this.$message.error(data.data.msg);
+        }
+      });
+    }
   }
 };
 </script>
@@ -56,6 +76,7 @@ export default {
     .name,
     .pass {
       position: relative;
+      color: #fff;
       .icon {
         width: 40px;
         position: absolute;
@@ -96,6 +117,7 @@ export default {
       padding-left: 39px;
       background: transparent;
       border-color: #68b9ed;
+      color: #fff;
       &:focus {
         border-color: #27a2f5;
       }

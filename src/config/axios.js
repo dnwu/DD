@@ -3,7 +3,7 @@
  */
 import axios from 'axios'
 // import store from '@/store' import * as types from '@/store/mutation-type'
-// import router from '@/router'
+import router from '@/router'
 
 // axios 配置
 axios.defaults.timeout = 5000;
@@ -30,7 +30,13 @@ axios
   .interceptors
   .response
   .use(response => {
-    // console.log(response.data.code); 登录失效
+    // console.log('response',response.data.code);
+    // 登录失效
+    if(response.data.code == 403) {
+      router.replace({
+        path: '/login'
+      })
+    }
     return response;
   }, error => {
     if (error.response) {

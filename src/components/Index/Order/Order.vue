@@ -114,22 +114,10 @@ export default {
     };
   },
   created() {
-    this.login();
+    this.getOrderList("1");
   },
   mounted() {},
   methods: {
-    login() {
-      this.axios({
-        method: "post",
-        url: "/web-schedul/service/user/login",
-        params: {
-          username: "admin",
-          password: "admin"
-        }
-      }).then(data => {
-        this.getOrderList("1");
-      });
-    },
     getOrderList(currentPage) {
       this.axios
         .get("/web-schedul/service/order/listOrderByPage", {
