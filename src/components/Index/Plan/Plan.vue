@@ -1,5 +1,5 @@
 <template>
-<div class="list">
+<div class="plan-list">
   <div class="top">
     <div class="add-order">
       <el-button type="primary" icon="el-icon-plus" @click="goTo('/index/planStep1')">新建调度方案</el-button>
@@ -18,9 +18,9 @@
       <div class="change-time">计算时间(ms)</div>
       <div class="edit-box"></div>
     </div>
-    <div class="box" @click="getResult(item)" ref="box" v-for="(item,index) in planList" :key="index">
+    <div class="box" ref="box" v-for="(item,index) in planList" :key="index">
       <div class="box-main common" :class="index%2==0?'':'couple'">
-        <div class="name">{{item.name}}</div>
+        <div class="name" @click="getResult(item)">{{item.name}}</div>
         <div class="time">{{item.time}}</div>
         <div class="target">{{item.optimal_object_name}}</div>
         <div class="all-pay">{{item.total_cost}}</div>
@@ -66,7 +66,28 @@ export default {
   methods: {
     getResult(item) {
       console.log(item.id);
-      window.sessionStorage.setItem('schemeId',item.id)
+      if(item.status == -1) {
+        this.$message({
+          message: '订单故障中 ,不能查看',
+          type: 'warning'
+        });
+        return
+      }
+      if(item.status == 0){
+        this.$message({
+          message: '订单未计算 ,不能查看',
+          type: 'warning'
+        });
+        return
+      }
+      if(item.status == 1){
+        this.$message({
+          message: '订单计算中 ,不能查看',
+          type: 'warning'
+        });
+        return
+      }
+      window.sessionStorage.setItem('scheme',JSON.stringify(item))
       this.$router.push('/index/result')
     },
     getPlanList(currentPage) {
@@ -78,6 +99,7 @@ export default {
           }
         })
         .then(data => {
+          console.log('planlist',data.data);
           console.log(data.data.schemes);
           this.total = data.data.schemes.totalCount;
           this.planList = data.data.schemes.recordList;
@@ -104,7 +126,7 @@ export default {
       this.axios
         .get("/web-schedul/service/scheme/delete", {
           params: {
-            schemeId: id
+            id: id
           }
         })
         .then(data => {
@@ -142,13 +164,14 @@ export default {
 
 $fontColor: #828282;
 $fontGreen: #22acf2;
-.list {
+.plan-list {
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
   .top {
-    display: flex;
-    justify-content: flex-end;
+    // display: flex;
+    // justify-content: flex-end;
+    text-align: right;
     margin-bottom: 20px;
     > div {
       margin: 0 10px;

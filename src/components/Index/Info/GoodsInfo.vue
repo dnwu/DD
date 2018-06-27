@@ -40,7 +40,7 @@
         <div class="remark">{{item.remarks}}</div>
         <div class="edit-box" :class="index%2==0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete" @click="deleteGood(item.stockId)"></div>
+          <div class="delete el-icon-delete" @click="deleteGood(item.id)"></div>
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ export default {
         })
         .then(data => {
           this.goodsInfoList = data.data.page.recordList;
-          console.log(this.goodsInfoList);
+          console.log(data.data);
           this.goodsInfoList.forEach(ele => {
             this.$set(ele, "_checked", false);
           });
@@ -108,7 +108,7 @@ export default {
       this.axios
         .get("/web-schedul/service/info/deleteStock", {
           params: {
-            stock_id: id
+            id: id
           }
         })
         .then(data => {
@@ -144,7 +144,7 @@ export default {
       let checked = ''
       this.goodsInfoList.forEach(ele => {
         if(ele._checked) {
-          checked = checked + ele.stockId + ','
+          checked = checked + ele.id + ','
         }
       })
       return checked.slice(0, -1)

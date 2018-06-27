@@ -44,6 +44,7 @@ export default {
         }
       }).then(data => {
         if(data.data.code == 200) {
+          window.localStorage.setItem('userInfo',this.name)
           this.$router.push('/index/Order')
         }else if(data.data.code == 500) {
           this.$message.error(data.data.msg);

@@ -4,24 +4,25 @@
     <div class="box">
       <div class="key">方案名称:</div>
       <div class="value">
-        <el-input v-model="input" size="mini" placeholder="请输入内容"></el-input>
+        <!--<el-input disabled v-model="schemeName" size="mini" placeholder="请输入内容"></el-input>-->
+        {{scheme.name}}
       </div>
     </div>
     <div class="box">
       <div class="key">日期:</div>
-      <div class="value">2010-10-10</div>
+      <div class="value">{{scheme.time}}</div>
     </div>
     <div class="box">
       <div class="key">优化目标:</div>
-      <div class="value">里程最短</div>
+      <div class="value">{{scheme.optimal_object_name}}</div>
     </div>
     <div class="box">
       <div class="key">线路总里程:</div>
-      <div class="value">318km</div>
+      <div class="value">{{scheme.total_distance}}km</div>
     </div>
     <div class="box">
       <el-button type="primary" size="mini" round icon="el-icon-upload">继续优化方案</el-button>
-      <el-button type="success" plain round icon="el-icon-download">导出</el-button>
+      <el-button @click="exportExcel" type="success" plain round icon="el-icon-download">导出</el-button>
       <el-button type="info" size="mini" round icon="el-icon-back">返回</el-button>
     </div>
   </div>
@@ -78,6 +79,7 @@
 </div>
 </template>
 <script>
+import { download, upload } from "@/config/js/load";
 import baiduMap from "@/config/js/initMap";
 export default {
   name: "result",
@@ -93,14 +95,16 @@ export default {
       planListAll: [],
       planListInfo: [],
       planListInfoLength: 0,
-      input: "",
+      schemeName: "",
       car: "",
       activeNames: "",
-      schemeId: ''
+      scheme: {}
     };
   },
   mounted() {
-    this.schemeId = window.sessionStorage.getItem('schemeId')
+    this.scheme =JSON.parse(window.sessionStorage.getItem('scheme'))
+    this.schemeName = this.scheme.name
+    console.log('this.scheme',this.scheme);
     this.$nextTick(() => {
       baiduMap.init().then(BMap => {
         // console.log(BMap);
@@ -117,6 +121,18 @@ export default {
     });
   },
   methods: {
+    exportExcel() {
+      this.axios({
+        method: "post",
+        url: "/web-schedul/service/excel/download/scheme",
+        params: {
+          ids: this.scheme.id
+        },
+        responseType: "blob"
+      }).then(data => {
+        download(data.data, "scheme");
+      });
+    },
     initMap(BMap) {
       this.map = new BMap.Map("container");
       // // 创建地图实例
@@ -156,7 +172,7 @@ export default {
       this.axios
         .get("/web-schedul/service/scheme/getRouteInfo", {
           params: {
-            schemeId: this.schemeId
+            schemeId: this.scheme.id
           }
         })
         .then(data => {
@@ -207,15 +223,18 @@ export default {
         waypoints: waypoints
       }); // waypoints表示途经点
       driving.setPolylinesSetCallback(function(lines) {
-        lines[0]._marker = "self";
-        lines[0].getPolyline().setStrokeOpacity(1);
-        if (active) {
-          lines[0].getPolyline().setStrokeColor("#00BD00");
-          // console.log(lines[0].getPolyline());
-        } else {
-          lines[0].getPolyline().setStrokeColor("#B8B8B8");
-        }
-        lines[0].getPolyline().setStrokeWeight(8);
+        // console.log(lines,'lines');
+        lines.forEach(ele => {
+          ele._marker = "self";
+          ele.getPolyline().setStrokeOpacity(1);
+          if (active) {
+            ele.getPolyline().setStrokeColor("#00BD00");
+            // console.log(ele.getPolyline());
+          } else {
+            ele.getPolyline().setStrokeColor("#B8B8B8");
+          }
+          ele.getPolyline().setStrokeWeight(8);
+        })
       });
       // console.log(driving);
       // driving.addEventListener('click',() => {

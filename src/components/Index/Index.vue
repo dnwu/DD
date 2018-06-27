@@ -3,8 +3,8 @@
   <el-container>
     <el-aside width="200px">
       <div class="avatar">
-        <img src="../../assets/avatar.jpg" alt="">
-        <p class="name">Admin</p>
+        <img src="../../assets/avatar.png" alt="">
+        <p class="name">{{userName}}</p>
       </div>
       <div class="nav">
         <ul class="navbox">
@@ -14,9 +14,9 @@
             <div class="title" @click='toggle1Class(2)' :class="level1Active === 2?'active':''"><img :src="iconArr[2]['d']">基础信息</div>
             <transition name="slide">
               <ul class="level2Box" v-show="level2Switch">
+                <li class="level2" @click='toggle2Class(2)' :class="level2Active === 2?'active':''"><router-link to="/index/positionInfo">位置信息</router-link></li>
                 <li class="level2" @click='toggle2Class(0)' :class="level2Active === 0?'active':''"><router-link to="/index/carInfo">车辆信息</router-link></li>
                 <li class="level2" @click='toggle2Class(1)' :class="level2Active === 1?'active':''"><router-link to="/index/goodsInfo">货物信息</router-link></li>
-                <li class="level2" @click='toggle2Class(2)' :class="level2Active === 2?'active':''"><router-link to="/index/positionInfo">位置信息</router-link></li>
                 <li class="level2" @click='toggle2Class(3)' :class="level2Active === 3?'active':''"><router-link to="/index/staffInfo">人员信息</router-link></li>
               </ul>
             </transition>
@@ -34,7 +34,7 @@
           <span>{{title}}</span>
         </div>
         <div class="logout">
-          <img src="../../assets/logout.png">
+          <img @click="logout" src="../../assets/logout.png">
         </div>
       </el-header>
       <el-main>
@@ -51,6 +51,7 @@ export default {
   name: "Index",
   data() {
     return {
+      userName: '',
       level2Switch: false,
       level1Active: 0,
       level2Active: -1,
@@ -84,11 +85,21 @@ export default {
     };
   },
   created() {
+    this.userName = window.localStorage.getItem('userInfo')
     this.fullPath = this.$route.fullPath;
     console.log(this.fullPath);
     this.initTitle();
   },
   methods: {
+    logout() {
+      console.log('click');
+      this.axios.get('/web-schedul/service/user/logout').then(data => {
+        console.log('logout',data);
+        if(data.data.code == 200){
+          this.$router.push('/login')
+        }
+      })
+    },
     toggle1Class(e) {
       if (e === 2) {
         this.level2Switch = !this.level2Switch;
@@ -96,7 +107,7 @@ export default {
           // this.level2Active = 0;
         } else {
           this.level2Active = 0;
-          this.$router.push("/index/carInfo");
+          this.$router.push("/index/positionInfo");
         }
       }
       if (e !== 2) {
@@ -187,6 +198,7 @@ export default {
     .el-aside {
       user-select: none;
       background: linear-gradient(top, #005ebe, #27aae0);
+      background: -webkit-gradient(linear, left top, left bottom, from(#005ebe), to(#27aae0));
       height: 100%;
       .avatar {
         margin-top: 100px;

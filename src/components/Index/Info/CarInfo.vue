@@ -44,7 +44,7 @@
         <div class="cost-per">{{item.perkm_cost}}</div>
         <div class="edit-box" :class="index%2 == 0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete" @click="deleteCar(item.car_id)"></div>
+          <div class="delete el-icon-delete" @click="deleteCar(item.id)"></div>
           <div class="arrow el-icon-arrow-down" @click="slide(index)"></div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default {
       this.axios
         .get("/web-schedul/service/info/deleteCar", {
           params: {
-            carId: id
+            id: id
           }
         })
         .then(data => {
@@ -191,7 +191,7 @@ export default {
       let checked = "";
       this.carInfoList.forEach(ele => {
         if (ele._checked) {
-          checked = checked + ele.car_id + ",";
+          checked = checked + ele.id + ",";
         }
       });
       return checked.slice(0, -1);

@@ -42,7 +42,7 @@
         <div class="lng-lat">{{`${item.lon}/${item.lat}`}}</div>
         <div class="edit-box" :class="index%2==0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete" @click="deletePosition(item.place_id)"></div>
+          <div class="delete el-icon-delete" @click="deletePosition(item.id)"></div>
         </div>
       </div>
     </div>
@@ -85,7 +85,8 @@ export default {
         })
         .then(data => {
           this.positonInfoList = data.data.page.recordList;
-          console.log(this.positonInfoList);
+          console.log('positionInfo',data.data);
+          this.total = data.data.page.totalCount;
           this.positonInfoList.forEach(ele => {
             this.$set(ele, "_checked", false);
           });
@@ -108,14 +109,15 @@ export default {
       this.getPositionInfoList(page);
     },
     deletePosition(id) {
-      // console.log(id);
+      console.log(id);
       this.axios
         .get("/web-schedul/service/info/deletePlace", {
           params: {
-            place_id: id
+            id: id
           }
         })
         .then(data => {
+          console.log('delet',data);
           this.getPositionInfoList(1);
         });
     },
@@ -148,7 +150,7 @@ export default {
       let checked = ''
       this.positonInfoList.forEach(ele => {
         if(ele._checked) {
-          checked = checked + ele.place_id + ','
+          checked = checked + ele.id + ','
         }
       })
       return checked.slice(0, -1)

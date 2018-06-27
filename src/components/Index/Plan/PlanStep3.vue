@@ -19,9 +19,9 @@
     <p class="word">调度方案计算中</p>
   </div>
   <div class="bottom">
-    <div class="btn1"><el-button type="info" round>停止优化</el-button></div>
+    <!--<div class="btn1"><el-button type="info" round>停止优化</el-button></div>-->
     <div class="btn1"><el-button type="primary" round @click="goto('/index/plan')">返回方案列表</el-button></div>
-    <div class="btn2"><el-button type="info" round @click="goto('/index/result')">查看结果</el-button></div>
+    <div class="btn2"><el-button type="info" disabled round @click="goto('/index/result')">查看结果</el-button></div>
   </div>
 </div>
 </template>

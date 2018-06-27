@@ -5,8 +5,9 @@ import axios from 'axios'
 // import store from '@/store' import * as types from '@/store/mutation-type'
 import router from '@/router'
 
-// axios 配置
+// axios 配置 zndd.sibat.cn
 axios.defaults.timeout = 5000;
+// axios.defaults.baseURL = 'http://zndd.sibat.cn';
 axios.defaults.baseURL = 'http://172.20.104.182:8080';
 axios.defaults.withCredentials = true;
 // axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -30,15 +31,15 @@ axios
   .interceptors
   .response
   .use(response => {
-    // console.log('response',response.data.code);
+    console.log('response',response.data.code);
     // 登录失效
     if(response.data.code == 403) {
-      router.replace({
-        path: '/login'
-      })
+      console.log('jinglail');
+      router.push('/login')
     }
     return response;
   }, error => {
+    console.log('error了',error);
     if (error.response) {
       switch (error.response.status) {
         case 401:

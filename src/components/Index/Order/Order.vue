@@ -61,7 +61,7 @@
         <div class="end-time">{{item.orderInfo.unload_time}}</div>
         <div class="edit-box" :class="index%2 == 0?'':'couple'">
           <div class="edit el-icon-edit-outline"></div>
-          <div class="delete el-icon-delete" @click="deleteOrder(item.orderInfo.order_id)"></div>
+          <div class="delete el-icon-delete" @click="deleteOrder(item.orderInfo.id)"></div>
           <div class="arrow el-icon-arrow-down" @click="slide(index)"></div>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default {
           }
         })
         .then(data => {
-          // console.log(data);
+          console.log('getOrderList',data);
           this.orderList = [...data.data.page.recordList];
           this.total = data.data.page.totalCount;
           this.orderList.forEach(ele => {
@@ -185,7 +185,7 @@ export default {
       let checked = ''
       this.orderList.forEach(ele => {
         if(ele._checked) {
-          checked = checked + ele.orderInfo.order_id + ','
+          checked = checked + ele.orderInfo.id + ','
         }
       })
       return checked.slice(0, -1)
@@ -198,7 +198,7 @@ export default {
       this.axios
         .get("/web-schedul/service/order/delete", {
           params: {
-            order_id: id
+            id: id
           }
         })
         .then(data => {
@@ -288,7 +288,7 @@ export default {
     goto(path) {
       this.orderList.forEach(ele => {
         if (ele._checked) {
-          this.saveOrderIds += ele.orderInfo.order_id + ",";
+          this.saveOrderIds += ele.orderInfo.id + ",";
         }
       });
       this.saveOrderIds = this.saveOrderIds.slice(0, -1);
